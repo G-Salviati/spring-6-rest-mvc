@@ -42,4 +42,12 @@ public class BeerController {
 
         return new ResponseEntity<>(headers, HttpStatus.CREATED);
     }
+
+    @PutMapping("/{beerId}")
+    public ResponseEntity<Void> updateBeerById(@PathVariable("beerId") UUID beerId, @RequestBody Beer beer){
+
+        beerService.updateBeerById(beerId, beer);
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }
