@@ -3,7 +3,6 @@ package com.giovannisalviati.spring6restmvc.services;
 import com.giovannisalviati.spring6restmvc.models.Beer;
 import com.giovannisalviati.spring6restmvc.models.BeerStyle;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -74,7 +73,7 @@ public class BeerServiceImpl implements BeerService {
     }
 
     @Override
-    public void saveNewBeer(Beer beer) {
+    public Beer saveNewBeer(Beer beer) {
         Beer newBeer = Beer.builder()
                 .id(UUID.randomUUID())
                 .version(1)
@@ -88,5 +87,6 @@ public class BeerServiceImpl implements BeerService {
                 .build();
 
         beerMap.put(newBeer.getId(), newBeer);
+        return newBeer;
     }
 }
