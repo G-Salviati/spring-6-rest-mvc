@@ -23,24 +23,31 @@ public class CustomerController {
     private final CustomerService customerService;
 
     @RequestMapping(method = RequestMethod.GET)
-    List<Customer> listCustomer() {
+    public List<Customer> listCustomer() {
         return customerService.listCustomers();
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/{customerId}")
-    Customer getCustomerById(@PathVariable("customerId") UUID id) {
+    public Customer getCustomerById(@PathVariable("customerId") UUID id) {
         log.debug("getCustomerById called - in controller.");
 
         return customerService.getCustomerById(id);
     }
 
     @PostMapping
-    ResponseEntity<Customer> saveNewCustomer(@RequestBody Customer customer) {
+    public ResponseEntity<Customer> saveNewCustomer(@RequestBody Customer customer) {
         Customer createdCustomer = customerService.saveNewCustomer(customer);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Location", "/api/v1/customers/" + createdCustomer.getId().toString());
 
         return new ResponseEntity<>(headers, HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{customerId}")
+    public ResponseEntity<Void> updateCustomerById(@PathVariable("customerId") UUID customerId, @RequestBody Customer customer){
+        customerService.updateCustomerById(customerId, customer);
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
