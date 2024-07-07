@@ -3,6 +3,7 @@ package com.giovannisalviati.spring6restmvc.services;
 import com.giovannisalviati.spring6restmvc.models.Customer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -85,5 +86,20 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public void deleteCustomerById(UUID customerId) {
         customersMap.remove(customerId);
+    }
+
+    @Override
+    public void patchCustomerById(UUID customerId, Customer customer) {
+        Customer existingCustomer = customersMap.get(customerId);
+
+        if(StringUtils.hasText(customer.getCustomerName())){
+            existingCustomer.setCustomerName(customer.getCustomerName());
+        }
+
+        if(customer.getVersion() != null){
+            existingCustomer.setVersion(customer.getVersion());
+        }
+
+        existingCustomer.setLastModifiedDate(LocalDateTime.now());
     }
 }
