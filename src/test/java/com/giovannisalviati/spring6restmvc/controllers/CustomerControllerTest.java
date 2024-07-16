@@ -8,6 +8,7 @@ import com.giovannisalviati.spring6restmvc.services.CustomerServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -39,6 +40,9 @@ class CustomerControllerTest {
     ObjectMapper objectMapper;
 
     CustomerServiceImpl customerServiceImpl;
+
+    @Captor
+    ArgumentCaptor<UUID> uuidArgumentCaptor;
 
     @BeforeEach
     void setUp() {
@@ -107,8 +111,6 @@ class CustomerControllerTest {
         mockMvc.perform(delete("/api/v1/customers/" + customer.getId())
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
-
-        ArgumentCaptor<UUID> uuidArgumentCaptor = ArgumentCaptor.forClass(UUID.class);
 
         verify(customerService).deleteCustomerById(uuidArgumentCaptor.capture());
 
