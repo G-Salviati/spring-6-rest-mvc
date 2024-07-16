@@ -16,12 +16,12 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 import java.util.UUID;
 import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(BeerController.class)
@@ -43,19 +43,6 @@ class BeerControllerTest {
     @BeforeEach
     void setUp() {
         beerServiceImpl = new BeerServiceImpl();
-    }
-
-    @Test
-    void saveNewBeer() throws Exception {
-        Beer beer = beerServiceImpl.listBeer().getFirst();
-        beer.setId(null);
-        beer.setVersion(null);
-
-        given(beerService.saveNewBeer(any(Beer.class))).willReturn(beerServiceImpl.listBeer().get(1));
-
-        mockMvc.perform(post("/api/v1/beers").accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(beer))).
-                andExpect(status().isCreated()).
-                andExpect(header().exists("Location"));
     }
 
     @Test
@@ -82,5 +69,34 @@ class BeerControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id", is(testBeer.getId().toString())))
                 .andExpect(jsonPath("$.beerName", is(testBeer.getBeerName())));
+    }
+
+    @Test
+    void saveNewBeer() throws Exception {
+        Beer beer = beerServiceImpl.listBeer().getFirst();
+        beer.setId(null);
+        beer.setVersion(null);
+
+        given(beerService.saveNewBeer(any(Beer.class))).willReturn(beerServiceImpl.listBeer().get(1));
+
+        mockMvc.perform(post("/api/v1/beers")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(beer))).
+                andExpect(status().isCreated()).
+                andExpect(header().exists("Location"));
+    }
+
+    @Test
+    void updateBeerById() throws Exception {
+        Beer beer = beerServiceImpl.listBeer().getFirst();
+
+        mockMvc.perform(put("/api/v1/beers/" + beer.getId())
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(beer))).
+                andExpect(status().isNoContent());
+
+        verify(beerService).updateBeerById(any(UUID.class), any(Beer.class));
     }
 }
