@@ -17,24 +17,25 @@ import java.util.UUID;
 @AllArgsConstructor
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/customers")
 public class CustomerController {
+    public static final String CUSTOMER_PATH = "/api/v1/customers";
+    public static final String CUSTOMER_PATH_ID = CUSTOMER_PATH + "/{customerId}";
 
     private final CustomerService customerService;
 
-    @RequestMapping(method = RequestMethod.GET)
+    @GetMapping(CUSTOMER_PATH)
     public List<Customer> listCustomer() {
         return customerService.listCustomers();
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/{customerId}")
+    @GetMapping(CUSTOMER_PATH_ID)
     public Customer getCustomerById(@PathVariable("customerId") UUID id) {
         log.debug("getCustomerById called - in controller.");
 
         return customerService.getCustomerById(id);
     }
 
-    @PostMapping
+    @PostMapping(CUSTOMER_PATH)
     public ResponseEntity<Customer> saveNewCustomer(@RequestBody Customer customer) {
         Customer createdCustomer = customerService.saveNewCustomer(customer);
 
@@ -44,21 +45,21 @@ public class CustomerController {
         return new ResponseEntity<>(headers, HttpStatus.CREATED);
     }
 
-    @PutMapping("/{customerId}")
+    @PutMapping(CUSTOMER_PATH_ID)
     public ResponseEntity<Void> updateCustomerById(@PathVariable("customerId") UUID customerId, @RequestBody Customer customer){
         customerService.updateCustomerById(customerId, customer);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @DeleteMapping("/{customerId}")
+    @DeleteMapping(CUSTOMER_PATH_ID)
     public ResponseEntity<Void> deleteCustomerById(@PathVariable("customerId") UUID customerId) {
         customerService.deleteCustomerById(customerId);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @PatchMapping("/{customerId}")
+    @PatchMapping(CUSTOMER_PATH_ID)
     public ResponseEntity<Void> patchCustomerById(@PathVariable("customerId") UUID customerId, @RequestBody Customer customer){
         customerService.patchCustomerById(customerId, customer);
 
