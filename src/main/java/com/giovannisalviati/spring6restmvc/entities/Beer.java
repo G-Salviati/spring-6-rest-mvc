@@ -1,10 +1,11 @@
 package com.giovannisalviati.spring6restmvc.entities;
 
 import com.giovannisalviati.spring6restmvc.models.BeerStyle;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Version;
+import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.IdGeneratorType;
+import org.hibernate.id.UUIDGenerator;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -18,6 +19,9 @@ import java.util.UUID;
 @Entity
 public class Beer {
     @Id
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @Column(length = 36, columnDefinition = "varchar", nullable = false, updatable = false)
     private UUID id;
 
     @Version
