@@ -32,7 +32,7 @@ public class BeerController {
 
         log.debug("getBeerById called - in controller.");
 
-        return beerService.getBeerById(id);
+        return beerService.getBeerById(id).orElseThrow(NotFoundException::new);
     }
 
     @PostMapping(BEER_PATH)

@@ -1,6 +1,5 @@
 package com.giovannisalviati.spring6restmvc.services;
 
-import ch.qos.logback.core.util.StringUtil;
 import com.giovannisalviati.spring6restmvc.models.Beer;
 import com.giovannisalviati.spring6restmvc.models.BeerStyle;
 import lombok.extern.slf4j.Slf4j;
@@ -67,11 +66,11 @@ public class BeerServiceImpl implements BeerService {
     }
 
     @Override
-    public Beer getBeerById(UUID id) {
+    public Optional<Beer> getBeerById(UUID id) {
 
         log.debug("getBeerById called - in service. ID: {}", id.toString());
 
-        return beerMap.get(id);
+        return Optional.of(beerMap.get(id));
     }
 
     @Override
@@ -94,7 +93,7 @@ public class BeerServiceImpl implements BeerService {
 
     @Override
     public void updateBeerById(UUID beerId, Beer beer) {
-        Beer existingBeer  = beerMap.get(beerId);
+        Beer existingBeer = beerMap.get(beerId);
 
         existingBeer.setBeerName(beer.getBeerName());
         existingBeer.setUpc(beer.getUpc());
@@ -115,27 +114,27 @@ public class BeerServiceImpl implements BeerService {
     public void patchBeerById(UUID beerId, Beer beer) {
         Beer existingBeer = beerMap.get(beerId);
 
-        if(StringUtils.hasText(beer.getBeerName())){
+        if (StringUtils.hasText(beer.getBeerName())) {
             existingBeer.setBeerName(beer.getBeerName());
         }
 
-        if(StringUtils.hasText(beer.getUpc())){
+        if (StringUtils.hasText(beer.getUpc())) {
             existingBeer.setUpc(beer.getUpc());
         }
 
-        if(beer.getVersion() != null){
+        if (beer.getVersion() != null) {
             existingBeer.setVersion(beer.getVersion());
         }
 
-        if(beer.getBeerStyle() != null){
+        if (beer.getBeerStyle() != null) {
             existingBeer.setBeerStyle(beer.getBeerStyle());
         }
 
-        if(beer.getPrice() != null){
+        if (beer.getPrice() != null) {
             existingBeer.setPrice(beer.getPrice());
         }
 
-        if(beer.getQuantityOnHand() != null){
+        if (beer.getQuantityOnHand() != null) {
             existingBeer.setQuantityOnHand(beer.getQuantityOnHand());
         }
 

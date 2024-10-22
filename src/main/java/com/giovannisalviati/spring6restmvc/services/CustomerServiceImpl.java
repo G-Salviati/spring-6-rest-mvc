@@ -53,10 +53,10 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public Customer getCustomerById(UUID id) {
+    public Optional<Customer> getCustomerById(UUID id) {
         log.debug("getBeerById called - in service. ID: {}", id.toString());
 
-        return customersMap.get(id);
+        return Optional.of(customersMap.get(id));
     }
 
     @Override
@@ -92,11 +92,11 @@ public class CustomerServiceImpl implements CustomerService {
     public void patchCustomerById(UUID customerId, Customer customer) {
         Customer existingCustomer = customersMap.get(customerId);
 
-        if(StringUtils.hasText(customer.getCustomerName())){
+        if (StringUtils.hasText(customer.getCustomerName())) {
             existingCustomer.setCustomerName(customer.getCustomerName());
         }
 
-        if(customer.getVersion() != null){
+        if (customer.getVersion() != null) {
             existingCustomer.setVersion(customer.getVersion());
         }
 
