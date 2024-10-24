@@ -24,6 +24,7 @@ class BeerRepositoryTest {
                 .build());
 
         assertThat(beer).isNotNull();
+        assertThat(beer.getId()).isNotNull();
         assertThat(beer.getBeerName()).isNotNull();
         assertThat(beer.getPrice()).isNotNull();
     }
