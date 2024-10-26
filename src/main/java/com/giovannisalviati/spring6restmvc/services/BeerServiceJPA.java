@@ -1,12 +1,15 @@
 package com.giovannisalviati.spring6restmvc.services;
 
+import com.giovannisalviati.spring6restmvc.entities.Beer;
 import com.giovannisalviati.spring6restmvc.mappers.BeerMapper;
 import com.giovannisalviati.spring6restmvc.models.BeerDTO;
 import com.giovannisalviati.spring6restmvc.repositories.BeerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -47,6 +50,33 @@ public class BeerServiceJPA implements BeerService {
     @Override
     public void updateBeerById(UUID beerId, BeerDTO beer) {
 
+        beerRepository.findById(beerId).ifPresent(existingBeer -> {
+
+            if (StringUtils.hasText(beer.getBeerName())) {
+                existingBeer.setBeerName(beer.getBeerName());
+            }
+
+            if (beer.getBeerStyle() != null) {
+                existingBeer.setBeerStyle(beer.getBeerStyle());
+            }
+
+            if (StringUtils.hasText(beer.getUpc())) {
+                existingBeer.setUpc(beer.getUpc());
+            }
+
+            if (beer.getQuantityOnHand() != null) {
+                existingBeer.setQuantityOnHand(beer.getQuantityOnHand());
+            }
+
+            if (beer.getPrice() != null) {
+                existingBeer.setPrice(beer.getPrice());
+            }
+
+            existingBeer.setUpdateDate(LocalDateTime.now());
+
+            beerRepository.save(existingBeer);
+
+        });
     }
 
     @Override

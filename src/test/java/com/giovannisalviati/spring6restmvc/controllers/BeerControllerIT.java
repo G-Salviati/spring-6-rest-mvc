@@ -1,6 +1,7 @@
 package com.giovannisalviati.spring6restmvc.controllers;
 
 import com.giovannisalviati.spring6restmvc.entities.Beer;
+import com.giovannisalviati.spring6restmvc.mappers.BeerMapper;
 import com.giovannisalviati.spring6restmvc.models.BeerDTO;
 import com.giovannisalviati.spring6restmvc.repositories.BeerRepository;
 import org.junit.jupiter.api.Test;
@@ -11,7 +12,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -25,6 +28,9 @@ class BeerControllerIT {
 
     @Autowired
     BeerRepository beerRepository;
+
+    @Autowired
+    BeerMapper beerMapper;
 
     @Test
     void testGetBeerById() {
@@ -57,8 +63,8 @@ class BeerControllerIT {
         assertThat(beers.size()).isEqualTo(0);
     }
 
-    @Rollback
     @Transactional
+    @Rollback
     @Test
     void testSaveNewBeer() {
         BeerDTO beerDTO = BeerDTO.builder()
@@ -74,5 +80,35 @@ class BeerControllerIT {
         UUID savedUUID = UUID.fromString(locationURI[4]);
 
         assertThat(beerRepository.findById(savedUUID)).isNotNull();
+    }
+
+    @Transactional
+    @Rollback
+    @Test
+    void testUpdateBeerById() {
+
+        Beer beer = beerRepository.findAll().getFirst();
+        BeerDTO beerDTO = beerMapper.beerToBeerDTO(beer);
+        beerDTO.setId(null);
+        beerDTO.setVersion(null);
+
+        Integer version = beer.getVersion();
+        BigDecimal price = beer.getPrice();
+
+        beerDTO.setPrice(price == null ? BigDecimal.valueOf(2.0) : BigDecimal.valueOf(price.doubleValue() + 1));
+
+        ResponseEntity<Void> responseEntity = beerController.updateBeerById(beer.getId(), beerDTO);
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.valueOf(204));
+        assertThat(responseEntity.getBody()).isNull();
+
+        Optional<Beer> updatedBeerOpt = beerRepository.findById(beer.getId());
+        assertTrue(updatedBeerOpt.isPresent());
+        Beer updatedBeer = updatedBeerOpt.get();
+        System.out.println("In test: " + updatedBeer);
+        assertThat(updatedBeer).isNotNull();
+        assertThat(updatedBeer.getId()).isEqualTo(beer.getId());
+        assertThat(updatedBeer.getPrice()).isNotEqualTo(price);
+        assertThat(updatedBeer.getVersion()).isEqualTo(version + 1);
     }
 }
