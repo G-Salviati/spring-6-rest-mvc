@@ -1,6 +1,5 @@
 package com.giovannisalviati.spring6restmvc.services;
 
-import com.giovannisalviati.spring6restmvc.entities.Beer;
 import com.giovannisalviati.spring6restmvc.mappers.BeerMapper;
 import com.giovannisalviati.spring6restmvc.models.BeerDTO;
 import com.giovannisalviati.spring6restmvc.repositories.BeerRepository;
@@ -13,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Service
@@ -48,9 +48,11 @@ public class BeerServiceJPA implements BeerService {
     }
 
     @Override
-    public void updateBeerById(UUID beerId, BeerDTO beer) {
+    public Optional<BeerDTO> updateBeerById(UUID beerId, BeerDTO beer) {
 
-        beerRepository.findById(beerId).ifPresent(existingBeer -> {
+        AtomicReference<Optional<BeerDTO>> atomicReference = new AtomicReference<>();
+        
+        beerRepository.findById(beerId).ifPresentOrElse(existingBeer -> {
 
             if (StringUtils.hasText(beer.getBeerName())) {
                 existingBeer.setBeerName(beer.getBeerName());
@@ -74,9 +76,12 @@ public class BeerServiceJPA implements BeerService {
 
             existingBeer.setUpdateDate(LocalDateTime.now());
 
-            beerRepository.save(existingBeer);
+            atomicReference.set(Optional.of(beerMapper.beerToBeerDTO(beerRepository.save(existingBeer))));
 
-        });
+
+        }, () -> atomicReference.set(Optional.empty()));
+
+        return atomicReference.get();
     }
 
     @Override

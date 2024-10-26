@@ -111,4 +111,13 @@ class BeerControllerIT {
         assertThat(updatedBeer.getPrice()).isNotEqualTo(price);
         assertThat(updatedBeer.getVersion()).isEqualTo(version + 1);
     }
+
+    @Rollback
+    @Transactional
+    @Test
+    void testUpdateBeerByIdNotFound() {
+        assertThrows(NotFoundException.class, () -> {
+            beerController.updateBeerById(UUID.randomUUID(), BeerDTO.builder().build());
+        });
+    }
 }
