@@ -15,6 +15,7 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -85,5 +86,41 @@ class CustomerControllerIT {
         UUID id = UUID.fromString(locationUri[4]);
 
         assertThat(customerRepository.findById(id)).isNotNull();
+    }
+
+    @Rollback
+    @Transactional
+    @Test
+    void testUpdateCustomerById() {
+        Customer customer = customerRepository.findAll().getFirst();
+
+        UUID customerId = customer.getId();
+        Integer version = customer.getVersion();
+        String customerName = customer.getCustomerName();
+
+        CustomerDTO customerDTO = customerMapper.customerToCustomerDTO(customer);
+        customerDTO.setId(null);
+        customerDTO.setVersion(null);
+        customerDTO.setCustomerName("UPDATED name");
+
+        ResponseEntity<Void> responseEntity = customerController.updateCustomerById(customerId, customerDTO);
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(204));
+        assertThat(responseEntity.getBody()).isNull();
+
+        entityManager.flush();
+        Optional<Customer> updatedCustomerOpt = customerRepository.findById(customerId);
+        assertTrue(updatedCustomerOpt.isPresent());
+        Customer updatedCustomer = updatedCustomerOpt.get();
+        assertThat(updatedCustomer.getId()).isEqualTo(customerId);
+        assertThat(updatedCustomer.getVersion()).isEqualTo(version + 1);
+    }
+
+    @Rollback
+    @Transactional
+    @Test
+    void testUpdateCustomerByIdNotFound() {
+        assertThrows(NotFoundException.class, () -> {
+            customerController.updateCustomerById(UUID.randomUUID(), CustomerDTO.builder().build());
+        });
     }
 }

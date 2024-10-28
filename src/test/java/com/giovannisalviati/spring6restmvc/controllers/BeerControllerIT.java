@@ -110,8 +110,7 @@ class BeerControllerIT {
 
         assertTrue(updatedBeerOpt.isPresent());
         Beer updatedBeer = updatedBeerOpt.get();
-        System.out.println("In test: " + updatedBeer);
-        assertThat(updatedBeer).isNotNull();
+
         assertThat(updatedBeer.getId()).isEqualTo(beer.getId());
         assertThat(updatedBeer.getPrice()).isNotEqualTo(price);
         assertThat(updatedBeer.getVersion()).isEqualTo(version + 1);

@@ -1,6 +1,7 @@
 package com.giovannisalviati.spring6restmvc.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.giovannisalviati.spring6restmvc.models.BeerDTO;
 import com.giovannisalviati.spring6restmvc.models.CustomerDTO;
 import com.giovannisalviati.spring6restmvc.services.CustomerService;
 import com.giovannisalviati.spring6restmvc.services.CustomerServiceImpl;
@@ -47,6 +48,8 @@ class CustomerControllerTest {
 
     @Captor
     ArgumentCaptor<CustomerDTO> customerArgumentCaptor;
+    @Autowired
+    private CustomerController customerController;
 
     @BeforeEach
     void setUp() {
@@ -106,6 +109,8 @@ class CustomerControllerTest {
     @Test
     void updateCustomerById() throws Exception {
         CustomerDTO customer = customerServiceImpl.listCustomers().getFirst();
+
+        given(customerService.updateCustomerById(any(), any())).willReturn(Optional.of(customer));
 
         mockMvc.perform(put(CustomerController.CUSTOMER_PATH_ID, customer.getId())
                         .accept(MediaType.APPLICATION_JSON)
