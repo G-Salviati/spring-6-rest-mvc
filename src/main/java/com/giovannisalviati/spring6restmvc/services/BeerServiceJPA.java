@@ -51,7 +51,7 @@ public class BeerServiceJPA implements BeerService {
     public Optional<BeerDTO> updateBeerById(UUID beerId, BeerDTO beer) {
 
         AtomicReference<Optional<BeerDTO>> atomicReference = new AtomicReference<>();
-        
+
         beerRepository.findById(beerId).ifPresentOrElse(existingBeer -> {
 
             if (StringUtils.hasText(beer.getBeerName())) {
@@ -86,7 +86,7 @@ public class BeerServiceJPA implements BeerService {
 
     @Override
     public void deleteBeerById(UUID beerId) {
-
+        beerRepository.deleteById(beerId);
     }
 
     @Override
