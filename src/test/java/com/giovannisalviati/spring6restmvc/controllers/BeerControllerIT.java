@@ -147,4 +147,23 @@ class BeerControllerIT {
             beerController.deleteBeerById(UUID.randomUUID());
         });
     }
+
+    @Rollback
+    @Transactional
+    @Test
+    void testPatchBeerById() {
+        Beer beer = beerRepository.findAll().getFirst();
+        Integer version = beer.getVersion();
+        BeerDTO beerDTO = BeerDTO.builder().price(BigDecimal.valueOf(5.00)).build();
+
+        ResponseEntity<Void> responseEntity = beerController.patchBeerById(beer.getId(), beerDTO);
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.valueOf(204));
+
+        entityManager.flush();
+        Optional<Beer> updatedBeerOpt = beerRepository.findById(beer.getId());
+        assertTrue(updatedBeerOpt.isPresent());
+        assertThat(updatedBeerOpt.get().getPrice()).isEqualTo(beerDTO.getPrice());
+        assertThat(updatedBeerOpt.get().getBeerName()).isEqualTo(beer.getBeerName());
+        assertThat(updatedBeerOpt.get().getVersion()).isEqualTo(version + 1);
+    }
 }
