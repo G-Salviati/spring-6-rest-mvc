@@ -145,4 +145,36 @@ class CustomerControllerIT {
         });
 
     }
+
+    @Rollback
+    @Transactional
+    @Test
+    void testPatchCustomerById() {
+        Customer customer = customerRepository.findAll().getFirst();
+        UUID customerId = customer.getId();
+        Integer version = customer.getVersion();
+
+        CustomerDTO customerDTO = CustomerDTO.builder()
+                .customerName("UPDATED")
+                .build();
+
+        ResponseEntity<Void> responseEntity = customerController.patchCustomerById(customerId, customerDTO);
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(204));
+
+        entityManager.flush();
+        Optional<Customer> updatedCustomerOpt = customerRepository.findById(customerId);
+        assertTrue(updatedCustomerOpt.isPresent());
+        Customer updatedCustomer = updatedCustomerOpt.get();
+        assertThat(updatedCustomer.getId()).isEqualTo(customerId);
+        assertThat(updatedCustomer.getVersion()).isEqualTo(version + 1);
+    }
+
+    @Rollback
+    @Transactional
+    @Test
+    void testPatchCustomerByIdNotFound() {
+        assertThrows(NotFoundException.class, () -> {
+            customerController.patchCustomerById(UUID.randomUUID(), CustomerDTO.builder().build());
+        });
+    }
 }

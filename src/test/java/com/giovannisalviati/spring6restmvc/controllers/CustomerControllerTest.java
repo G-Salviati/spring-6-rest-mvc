@@ -126,7 +126,7 @@ class CustomerControllerTest {
         CustomerDTO customer = customerServiceImpl.listCustomers().getFirst();
 
         given(customerService.deleteCustomerById(any())).willReturn(true);
-        
+
         mockMvc.perform(delete(CustomerController.CUSTOMER_PATH_ID, customer.getId())
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
@@ -142,6 +142,8 @@ class CustomerControllerTest {
 
         Map<String, Object> customerMap = new HashMap<>();
         customerMap.put("customerName", "new name");
+
+        given(customerService.patchCustomerById(any(), any())).willReturn(Optional.of(customer));
 
         mockMvc.perform(patch(CustomerController.CUSTOMER_PATH_ID, customer.getId())
                         .accept(MediaType.APPLICATION_JSON)
