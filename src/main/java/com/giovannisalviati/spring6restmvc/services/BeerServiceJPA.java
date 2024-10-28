@@ -91,29 +91,36 @@ public class BeerServiceJPA implements BeerService {
     }
 
     @Override
-    public void patchBeerById(UUID beerId, BeerDTO beer) {
+    public Optional<BeerDTO> patchBeerById(UUID beerId, BeerDTO beer) {
+        AtomicReference<Optional<BeerDTO>> atomicReference = new AtomicReference<>();
 
-        beerRepository.findById(beerId).ifPresent(existingBeer -> {
+        beerRepository.findById(beerId).ifPresentOrElse(existingBeer -> {
 
+            if (StringUtils.hasText(beer.getBeerName())) {
+                existingBeer.setBeerName(beer.getBeerName());
+            }
 
-            existingBeer.setBeerName(beer.getBeerName());
+            if (beer.getBeerStyle() != null) {
+                existingBeer.setBeerStyle(beer.getBeerStyle());
+            }
 
-            
-            existingBeer.setBeerStyle(beer.getBeerStyle());
+            if (StringUtils.hasText(beer.getUpc())) {
+                existingBeer.setUpc(beer.getUpc());
+            }
 
+            if (beer.getQuantityOnHand() != null) {
+                existingBeer.setQuantityOnHand(beer.getQuantityOnHand());
+            }
 
-            existingBeer.setUpc(beer.getUpc());
-
-
-            existingBeer.setQuantityOnHand(beer.getQuantityOnHand());
-
-
-            existingBeer.setPrice(beer.getPrice());
-
+            if (beer.getPrice() != null) {
+                existingBeer.setPrice(beer.getPrice());
+            }
 
             existingBeer.setUpdateDate(LocalDateTime.now());
 
-            beerRepository.save(existingBeer);
-        });
+            atomicReference.set(Optional.of(beerMapper.beerToBeerDTO(beerRepository.save(existingBeer))));
+        }, () -> atomicReference.set(Optional.empty()));
+
+        return atomicReference.get();
     }
 }

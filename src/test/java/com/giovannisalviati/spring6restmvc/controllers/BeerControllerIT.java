@@ -166,4 +166,13 @@ class BeerControllerIT {
         assertThat(updatedBeerOpt.get().getBeerName()).isEqualTo(beer.getBeerName());
         assertThat(updatedBeerOpt.get().getVersion()).isEqualTo(version + 1);
     }
+
+    @Rollback
+    @Transactional
+    @Test
+    void testPatchBeerByIdNotFound() {
+        assertThrows(NotFoundException.class, () -> {
+            beerController.patchBeerById(UUID.randomUUID(), BeerDTO.builder().build());
+        });
+    }
 }
