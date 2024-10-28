@@ -125,6 +125,8 @@ class CustomerControllerTest {
     void deleteCustomerById() throws Exception {
         CustomerDTO customer = customerServiceImpl.listCustomers().getFirst();
 
+        given(customerService.deleteCustomerById(any())).willReturn(true);
+        
         mockMvc.perform(delete(CustomerController.CUSTOMER_PATH_ID, customer.getId())
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
