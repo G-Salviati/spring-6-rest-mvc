@@ -4,6 +4,7 @@ import com.giovannisalviati.spring6restmvc.entities.Beer;
 import com.giovannisalviati.spring6restmvc.mappers.BeerMapper;
 import com.giovannisalviati.spring6restmvc.models.BeerDTO;
 import com.giovannisalviati.spring6restmvc.repositories.BeerRepository;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -31,6 +32,9 @@ class BeerControllerIT {
 
     @Autowired
     BeerMapper beerMapper;
+
+    @Autowired
+    EntityManager entityManager;
 
     @Test
     void testGetBeerById() {
@@ -98,11 +102,12 @@ class BeerControllerIT {
         beerDTO.setPrice(price == null ? BigDecimal.valueOf(2.0) : BigDecimal.valueOf(price.doubleValue() + 1));
 
         ResponseEntity<Void> responseEntity = beerController.updateBeerById(beer.getId(), beerDTO);
-
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.valueOf(204));
         assertThat(responseEntity.getBody()).isNull();
 
+        entityManager.flush();
         Optional<Beer> updatedBeerOpt = beerRepository.findById(beer.getId());
+
         assertTrue(updatedBeerOpt.isPresent());
         Beer updatedBeer = updatedBeerOpt.get();
         System.out.println("In test: " + updatedBeer);
