@@ -54,25 +54,21 @@ public class BeerServiceJPA implements BeerService {
 
         beerRepository.findById(beerId).ifPresentOrElse(existingBeer -> {
 
-            if (StringUtils.hasText(beer.getBeerName())) {
-                existingBeer.setBeerName(beer.getBeerName());
-            }
 
-            if (beer.getBeerStyle() != null) {
-                existingBeer.setBeerStyle(beer.getBeerStyle());
-            }
+            existingBeer.setBeerName(beer.getBeerName());
 
-            if (StringUtils.hasText(beer.getUpc())) {
-                existingBeer.setUpc(beer.getUpc());
-            }
 
-            if (beer.getQuantityOnHand() != null) {
-                existingBeer.setQuantityOnHand(beer.getQuantityOnHand());
-            }
+            existingBeer.setBeerStyle(beer.getBeerStyle());
 
-            if (beer.getPrice() != null) {
-                existingBeer.setPrice(beer.getPrice());
-            }
+
+            existingBeer.setUpc(beer.getUpc());
+
+
+            existingBeer.setQuantityOnHand(beer.getQuantityOnHand());
+
+
+            existingBeer.setPrice(beer.getPrice());
+
 
             existingBeer.setUpdateDate(LocalDateTime.now());
 
