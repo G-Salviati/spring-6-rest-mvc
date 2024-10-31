@@ -16,6 +16,7 @@ public class BeerDTO {
 
     @NotNull
     @NotBlank
+    @Size(max = 50)
     private String beerName;
 
     @NotNull
@@ -23,6 +24,7 @@ public class BeerDTO {
 
     @NotNull
     @NotBlank
+    @Size(max = 255)
     private String upc;
 
     @PositiveOrZero

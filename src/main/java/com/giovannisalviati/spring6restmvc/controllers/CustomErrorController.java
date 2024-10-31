@@ -1,6 +1,7 @@
 package com.giovannisalviati.spring6restmvc.controllers;
 
 import jakarta.transaction.TransactionalException;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.validation.FieldError;
@@ -16,13 +17,29 @@ import java.util.stream.Collectors;
 @ControllerAdvice
 public class CustomErrorController {
 
-    @ExceptionHandler
-    ResponseEntity<Void> handleJPAViolations(TransactionSystemException exception) {
-        return ResponseEntity.badRequest().build();
+    @ExceptionHandler(TransactionSystemException.class)
+    ResponseEntity<List<Map<String, String>>> handleJPAViolations(TransactionSystemException exception) {
+        ResponseEntity.BodyBuilder responseEntity = ResponseEntity.badRequest();
+
+
+        if (exception.getCause().getCause() instanceof ConstraintViolationException cve) {
+            List<Map<String, String>> errors = cve.getConstraintViolations().stream()
+                    .map(constraintViolation -> {
+                        Map<String, String> errorMap = new HashMap<>();
+                        errorMap.put(constraintViolation.getPropertyPath().toString(), constraintViolation.getMessage());
+                        return errorMap;
+                    })
+                    .toList();
+
+            return responseEntity.body(errors);
+        }
+
+        return responseEntity.build();
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     ResponseEntity<List<Map<String, String>>> handleBindErrors(MethodArgumentNotValidException exception) {
+
         List<Map<String, String>> errorList = exception.getFieldErrors().stream()
                 .map(fieldError -> {
                     Map<String, String> errorMap = new HashMap<>();
