@@ -2,10 +2,7 @@ package com.giovannisalviati.spring6restmvc.entities;
 
 import com.giovannisalviati.spring6restmvc.models.BeerStyle;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.IdGeneratorType;
@@ -36,6 +33,8 @@ public class Beer {
 
     @NotNull
     @NotBlank
+    @Column(length = 50)
+    @Size(max = 50)
     private String beerName;
 
     @NotNull
@@ -43,6 +42,7 @@ public class Beer {
 
     @NotNull
     @NotBlank
+    @Size(max = 255)
     private String upc;
 
     @PositiveOrZero
@@ -51,7 +51,7 @@ public class Beer {
     @NotNull
     @Positive
     private BigDecimal price;
-    
+
     private LocalDateTime createdDate;
     private LocalDateTime updateDate;
 }
