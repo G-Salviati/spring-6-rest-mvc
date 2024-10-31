@@ -1,25 +1,36 @@
 package com.giovannisalviati.spring6restmvc.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.giovannisalviati.spring6restmvc.entities.Beer;
 import com.giovannisalviati.spring6restmvc.mappers.BeerMapper;
 import com.giovannisalviati.spring6restmvc.models.BeerDTO;
 import com.giovannisalviati.spring6restmvc.repositories.BeerRepository;
 import jakarta.persistence.EntityManager;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.WebApplicationContext;
 
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 class BeerControllerIT {
@@ -35,6 +46,19 @@ class BeerControllerIT {
 
     @Autowired
     EntityManager entityManager;
+
+    @Autowired
+    ObjectMapper objectMapper;
+
+    @Autowired
+    WebApplicationContext wac;
+
+    MockMvc mockMvc;
+
+    @BeforeEach
+    void setUp() {
+        mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
+    }
 
     @Test
     void testGetBeerById() {
@@ -173,5 +197,19 @@ class BeerControllerIT {
         assertThrows(NotFoundException.class, () -> {
             beerController.patchBeerById(UUID.randomUUID(), BeerDTO.builder().build());
         });
+    }
+
+    @Test
+    void patchBeerByIdNameTooLong() throws Exception {
+        Beer beer = beerRepository.findAll().getFirst();
+
+        Map<String, Object> beerMap = new HashMap<>();
+        beerMap.put("beerName", "new name 12321412451123214124511232141245112321412451123214124511232141245112321412451");
+
+        mockMvc.perform(patch(BeerController.BEER_PATH_ID, beer.getId())
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(beerMap)))
+                .andExpect(status().isBadRequest());
     }
 }
