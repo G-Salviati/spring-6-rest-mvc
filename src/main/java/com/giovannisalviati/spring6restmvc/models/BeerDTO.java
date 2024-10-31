@@ -14,15 +14,15 @@ public class BeerDTO {
     private UUID id;
     private Integer version;
 
-    @NotBlank
     @NotNull
+    @NotBlank
     private String beerName;
 
     @NotNull
     private BeerStyle beerStyle;
 
-    @NotBlank
     @NotNull
+    @NotBlank
     private String upc;
 
     @PositiveOrZero
