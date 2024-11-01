@@ -1,6 +1,7 @@
 package com.giovannisalviati.spring6restmvc.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -26,6 +27,10 @@ public class Customer {
 
     @Version
     private Integer version;
+
+    @Column(length = 255)
+    @Email
+    String email;
 
     String customerName;
     LocalDateTime createdDate;
