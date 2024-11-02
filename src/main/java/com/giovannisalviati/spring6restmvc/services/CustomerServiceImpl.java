@@ -21,24 +21,18 @@ public class CustomerServiceImpl implements CustomerService {
                 .id(UUID.randomUUID())
                 .version(1)
                 .customerName("The Mayflower Pub")
-                .createdDate(LocalDateTime.now())
-                .lastModifiedDate(LocalDateTime.now())
                 .build();
 
         CustomerDTO customer2 = CustomerDTO.builder()
                 .id(UUID.randomUUID())
                 .version(1)
                 .customerName("The Queens Head Pub")
-                .createdDate(LocalDateTime.now())
-                .lastModifiedDate(LocalDateTime.now())
                 .build();
 
         CustomerDTO customer3 = CustomerDTO.builder()
                 .id(UUID.randomUUID())
                 .version(1)
                 .customerName("The Victoria Pub")
-                .createdDate(LocalDateTime.now())
-                .lastModifiedDate(LocalDateTime.now())
                 .build();
 
         customersMap.put(customer1.getId(), customer1);
@@ -64,8 +58,6 @@ public class CustomerServiceImpl implements CustomerService {
         CustomerDTO customer = CustomerDTO.builder()
                 .id(UUID.randomUUID())
                 .customerName(newCustomer.getCustomerName())
-                .createdDate(LocalDateTime.now())
-                .lastModifiedDate(LocalDateTime.now())
                 .version(1)
                 .build();
 
@@ -78,7 +70,6 @@ public class CustomerServiceImpl implements CustomerService {
         CustomerDTO existingCustomer = customersMap.get(customerId);
 
         existingCustomer.setCustomerName(customer.getCustomerName());
-        existingCustomer.setLastModifiedDate(LocalDateTime.now());
 
         customersMap.put(customerId, existingCustomer);
 
@@ -102,8 +93,6 @@ public class CustomerServiceImpl implements CustomerService {
         if (customer.getVersion() != null) {
             existingCustomer.setVersion(customer.getVersion());
         }
-
-        existingCustomer.setLastModifiedDate(LocalDateTime.now());
 
         return Optional.of(existingCustomer);
     }

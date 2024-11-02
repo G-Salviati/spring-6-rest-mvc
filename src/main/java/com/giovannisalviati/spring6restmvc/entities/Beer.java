@@ -4,10 +4,7 @@ import com.giovannisalviati.spring6restmvc.models.BeerStyle;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.IdGeneratorType;
-import org.hibernate.annotations.JdbcType;
-import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.*;
 import org.hibernate.id.UUIDGenerator;
 import org.hibernate.type.SqlTypes;
 
@@ -57,6 +54,9 @@ public class Beer {
     @Positive
     private BigDecimal price;
 
+    @CreationTimestamp
     private LocalDateTime createdDate;
+
+    @UpdateTimestamp
     private LocalDateTime updateDate;
 }
